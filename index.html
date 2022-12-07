@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>EVOS PBL</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+
+    <link href="./vendor/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" rel="stylesheet"/><!-- v6.2.1 free -->
+
+    <script src="./vendor/jquery/jquery-3.2.1.slim.min.js"></script><!-- v3.2.1 slim -->
+    <script src="./vendor/bootstrap/dist/js/bootstrap.bundle.min.js"></script><!-- v5.2 -->
+    <script src="./vendor/vue/vue.js"></script><!-- v2.7.14 -->
+
+    <link href="./assets/css/pricing.css" rel="stylesheet">
+    <style>
+        .logo{
+            background-color: green;
+            color: white;
+            padding: 5px 20px;
+            font-weight: 600;
+        }
+        .cart{
+            background-color: green;
+            color: white;
+            padding: 5px 20px;
+            font-weight: 600;
+            border-radius: 10px;
+        }
+        .cart:hover{
+            background-color: #d9d9d9;
+            color: green;
+        }
+        .product-info > div{
+            font-size: 20px;
+        }
+        .pricing-header > h1{
+            font-weight: 700 !important;
+        }
+        .cart-circle{
+            background-color: white;
+            color: green;
+            border-radius: 45px;
+            padding: 0 6px;
+        }
+
+    </style>
+
+</head>
+<body>
+    <div id="app">
+
+        <!-- START HEADER -->
+        <header>
+            <div class="container">
+
+                <div class="d-flex flex-column flex-md-row align-items-center pb-3 mb-4 border-bottom">
+                    <a href="/" class="d-flex align-items-center text-dark text-decoration-none">
+                        <span class="fs-3 logo">EVOS</span>
+                    </a>
+                    <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
+                        <a v-for="link in page.header.links" class="me-3 py-2 text-dark text-decoration-none" :href="link.link">
+                            {{ link.name }}
+                        </a>
+                    </nav>
+                    <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
+                        <button class="btn cart" @click="showCart">
+                            <i class="fa-solid fa-cart-shopping"></i> Cart <span class="cart-circle">{{ cart.length }}</span>
+                        </button>
+                    </nav>
+                </div>
+            </div>
+        </header>
+        <!-- END HEADER -->
+
+        <main>
+            <div class="container">
+            <div class="pricing-header p-3 pb-md-4 mx-auto text-center">
+                <h1 class="display-5 fw-normal">Menu</h1>
+            </div>
+
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+
+                <div v-for="product in products" class="col">
+                    <div class="card shadow-sm">
+                        <img :src="'./assets/img' + product.image" class="bd-placeholder-img card-img-top" width="100%" height="225">
+
+                        <div class="card-body product-info">
+                            <p class="card-text">
+                                <b>{{ product.name }}</b>
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">{{ product.price }} UZS</small>
+                                <button @click="addToCart(product.id)" type="button" class="btn btn-warning"><i class="fa fa-plus"></i> Add to cart</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            </div>
+
+        </main>
+
+        <footer style="background-color: #ebedf8; margin-top: 30px;">
+            <div class="container">
+            <div class="row">
+                <div class="col-12 py-5">
+                    <span class="fs-3 logo">EVOS</span>
+                </div>
+                <div class="col-12 pb-5">
+                    <div class="row">
+                        <div class="col-md-6">© Evos 2006 - 2022 All rights reserved</div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </footer>
+
+        <div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">
+
+                        <div class="row">
+                            <div class="col-12" style="text-align: right;">
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="col-12" style="text-align: center;">
+                                <h4>Buyurtmani tasdiqlang</h4>
+                            </div>
+                            <div v-if="cart.length" class="col-12" style="padding: 20px 0;">
+                                <div class="row">
+                                    <div v-for="cProduct in cart" class="col-12" style="padding: 0 40px;">
+                                        <div class="row" style="align-items: center;">
+                                            <div class="col-3">
+                                                <img :src="'./assets/img' + cProduct.image" class="img-fluid">
+                                            </div>
+                                            <div class="col-9 p-3">
+                                                <p class="fs-4 fw-bold">{{ cProduct.name }}</p>
+                                                <div class="d-flex" style="justify-content: space-between; align-items: flex-end;">
+                                                    <p class="fs-5" style="text-align: right;">{{ cProduct.price }} UZS</p>
+                                                    <button @click="removeFromCart(cProduct.id)" class="btn btn-outline-light text-muted"><i class="fa-solid fa-xmark"></i> Bekor qilish</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    {{ cartDetails }}
+                                </div>
+                            </div>
+                            <div v-else class="p-5">
+
+                                <div class="d-flex" style="flex-direction: column; align-items: center;">
+                                    <img src="./assets/img/front/empty-cart.png" class="img-fluid">
+                                    <h3>Sizning savatingiz bo'sh</h3>
+                                </div>
+
+                            </div>
+                            <div class="col-12">
+                                <div class="row">
+                                    <div class="form-group p-4">
+                                        <div class="mb-3">
+                                            <label for="form1" class="form-label">Phone:</label>
+                                            <input v-model="customerDetails.phone" type="text" class="form-control" id="form1" placeholder="+998 90 123 45 67">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="form2" class="form-label">Address:</label>
+                                            <input v-model="customerDetails.address" type="text" class="form-control" id="form2" placeholder="Toshkent shahar">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12" style="text-align: center;">
+                                <button type="button" class="btn btn-danger" @click="clearFromCart()">
+                                    <i class="fa-solid fa-xmark"></i>
+                                    Bekor qilish
+                                </button>
+                                <button v-if="cart.length" type="button" class="btn btn-success" @click="orderNow()">
+                                    <i class="fa-solid fa-check"></i>
+                                    Buyurtma qilish
+                                </button>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+<script type="module">
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            cart: [],
+            cartDetails: {
+                totalPrice: 0,
+            },
+            customerDetails: {
+                address: "",
+                phone: ""
+            },
+            company: {
+                phone: '',
+                email: '',
+            },
+            page: {
+                header: {
+                    links: [
+                        { name: "Asosiy", link: "./index.html" },
+                        { name: "Filiallar", link: "./filial.html" },
+                        { name: "Vakantlar", link: "#" },
+                        { name: "Yangiliklar", link: "#" },
+                        { name: "Biz haqimizda", link: "#" },
+                        { name: "Kontaktlar", link: "#" },
+                    ]
+                }
+            },
+            products: [
+                { id: 1, name: "Lavash", price: "18000", image: "/food/lavash_s_govyadinoy_evos.png" },
+                { id: 2, name: "Lavash Pishloqli", price: "18000", image: "/food/lavash_s_govyadinoy_evos.png" },
+                { id: 3, name: "Lavash Mini", price: "18000", image: "/food/lavash_s_govyadinoy_evos.png" },
+                { id: 4, name: "Lavash", price: "18000", image: "/food/lavash_s_govyadinoy_evos.png" },
+                { id: 5, name: "Lavash", price: "18000", image: "/food/lavash_s_govyadinoy_evos.png" },
+                { id: 6, name: "Lavash", price: "18000", image: "/food/lavash_s_govyadinoy_evos.png" },
+                { id: 7, name: "Lavash", price: "18000", image: "/food/lavash_s_govyadinoy_evos.png" },
+                { id: 8, name: "Lavash", price: "18000", image: "/food/lavash_s_govyadinoy_evos.png" },
+                { id: 9, name: "Lavash", price: "18000", image: "/food/lavash_s_govyadinoy_evos.png" },
+                { id: 10, name: "Lavash", price: "18000", image: "/food/lavash_s_govyadinoy_evos.png" }
+            ]
+        },
+        created() {
+            console.log('Vue Created')
+            $(document).ready(function(){
+                if (jQuery) {
+                    console.log('Jquery working')
+                } else {
+                    alert("Jquery not working");
+                }
+            });
+        },
+        mounted() {
+            console.log('Vue Mounted')
+        },
+        methods: {
+            showCart(){
+                console.log('open cart');
+                $(document).ready(function() {
+                    $('#cartModal').modal('show');
+                });
+            },
+            addToCart(id){
+                console.log('product added (id: ' + id + ')')
+                this.cart.push(
+                    this.getProductByID(id)
+                )
+                this.sumCart()
+
+            },
+            sumCart(){
+                let totalSum = 0;
+                this.cart.forEach(function (cartProduct, index) {
+                    totalSum += parseInt(cartProduct.price)
+                })
+                this.cartDetails.totalPrice = totalSum
+            },
+            removeFromCart(id){
+                let removeCartIndex;
+                this.cart.forEach(function (eid, index){
+                    console.log(eid)
+                    if (eid.id === id) {
+                        console.log('remove: id ' + id)
+                        removeCartIndex = index;
+                    }
+                })
+                this.cart.shift(removeCartIndex)
+                this.sumCart()
+            },
+            clearFromCart(){
+                this.cart = []
+                this.sumCart()
+            },
+            getProductByID(id){
+                console.log('get product (id: ' + id + ')')
+                let selected = this.products.filter(d => d.id === id)[0];
+                console.log(selected)
+                return selected
+
+            },
+            orderNow(){
+                let order = {
+                    cart: this.cart,
+                    customer: this.customerDetails,
+                    totalPrice: this.cartDetails.totalPrice
+                }
+
+                console.log(order)
+            }
+        }
+    })
+</script>
+
+
+</body>
+</html>
+
